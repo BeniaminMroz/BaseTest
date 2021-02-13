@@ -1,0 +1,76 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: "java"
+apply plugin: "ru.d10xa.allure"
+apply plugin: "com.energizedwork.webdriver-binaries"
+
+defaultTasks "clean", "test"
+
+sourceCompatibility = 1.8
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "io.qameta.allure:allure-gradle:2.5"
+        classpath "ru.d10xa:gradle-allure-plugin:0.5.5"
+        classpath "gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.4"
+        }
+
+}
+
+configurations {
+    agent
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    agent "org.aspectj:aspectjweaver:1.8.13"
+    testCompile "ru.yandex.qatools.allure:allure-testng-adaptor:1.5.4"
+    compile "org.seleniumhq.selenium:selenium-java:3.9.0"
+    compile "com.codeborne:selenide:4.10.01"
+    testCompile "org.testng:testng:6.9.10"
+    compile "ru.d10xa:gradle-allure-plugin:0.5.5"
+    testCompile "junit:junit:4.12"
+
+}
+[compileJava, compileTestJava]*.options.collect { options -> options.encoding = 'UTF-8' }
+[compileJava, compileTestJava]*.options.collect { options -> options.debug = true }
+
+test.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}
+test {
+    useTestNG()
+}
+
+allure {
+    version = "2.5"
+    aspectjweaver = true
+    testNG = true
+    allureResultsDir = "$buildDir/allure-results"
+    allureReportDir= "$buildDir/allure-report"
+}
+
+webdriverBinaries {
+    chromedriver "75.0.3770.140"
+}
+
+task serve  {
+    doLast {
+        SimpleHttpFileServerFactory factory = new SimpleHttpFileServerFactory()
+        HttpFileServer server = factory.start(new File("$buildDir/allure-report/"), 8085)
+        println("Server Started on 8085 ctrc+c to kill it")
+        println("http://localhost:8085/index.html")
+        java.lang.Thread.sleep(Long.MAX_VALUE)
+    }
+}
