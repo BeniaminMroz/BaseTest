@@ -2,17 +2,18 @@ package tests;
 
 import base.BaseTest;
 import org.testng.annotations.Test;
-
 import static helpers.TestData.*;
-import static pageObjects.HomePage.*;
+import static base.HomePage.*;
 
 public class HomePageTest extends BaseTest {
 
     @Test
-    public static void asUserIWouldLikeTosearchForHotelsInWroclaw() {
+    public static void asUserIWouldLikeTosearchForHotelsInHaniaGreece() {
+        //clickBtnAcceptIfIsVisible();
         provideTheLocationSearchBox(CITY_HANIA);
-        clickOnZameldowanieBox();
-        pickdate();
-        checkThatCityHasBeenFoundInSearchBox(CITY_WROCLAW_IN_SEARCH_BOX);
+        pickStartAndEndDate();
+        clickBtnSearch();
+        checkThatDestinationHasBeenFound();
     }
+
 }
