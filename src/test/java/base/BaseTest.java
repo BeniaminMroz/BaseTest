@@ -1,28 +1,28 @@
 package base;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import config.TestConfig;
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import utils.DriverFactory;
 
-import static com.codeborne.selenide.Configuration.baseUrl;
-import static com.codeborne.selenide.Configuration.browser;
-import static com.codeborne.selenide.Configuration.startMaximized;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.WebDriverRunner.CHROME;
-import static com.codeborne.selenide.WebDriverRunner.closeWebDriver;
-import static config.TestConfig.ENVIRONMENT_URL;
+import java.util.concurrent.TimeUnit;
 
-public class BaseTest {
-    @BeforeMethod(alwaysRun = true)
-    public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "C:/Users/benia/.gradle/webdriver/chromedriver/88/chromedriver.exe");
-        browser = CHROME;
-        startMaximized = true;
-        baseUrl = ENVIRONMENT_URL;
-        open(baseUrl);
+
+public class BaseTest extends TestConfig {
+
+    protected WebDriver driver;
+
+    @BeforeTest(alwaysRun = true)
+    public void setup() {
+        driver = DriverFactory.getDriver();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
+        driver.get("https://www.booking.com");
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterTest
     public void tearDown() {
-        closeWebDriver();
+        driver.quit();
     }
 }
